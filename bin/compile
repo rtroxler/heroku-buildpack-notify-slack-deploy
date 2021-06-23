@@ -28,8 +28,8 @@ else
   echo "-----> Loading commit information from Github"
   COMMIT_JSON=$(curl -H "Authorization: token $DEPLOY_NOTIFY_GITHUB_AUTH_TOKEN" https://api.github.com/repos/$DEPLOY_NOTIFY_GITHUB_ORG/$DEPLOY_NOTIFY_GITHUB_PROJECT/commits/$SOURCE_VERSION)
   AUTHOR_NAME=$(echo "$COMMIT_JSON" | python3 -c "import sys, json; print(json.load(sys.stdin, strict=False)['commit']['author']['name'])" || echo '')
-  COMMIT_MESSAGE=$(echo "$COMMIT_JSON" | python3 -c "import sys, json; print(json.load(sys.stdin, strict=False)['commit']['message'])" || echo '')
-  SLACK_MESSAGE="*$HEROKU_APP_NAME* was deployed by $AUTHOR_NAME!\n\`\`\`\n$COMMIT_MESSAGE\n\`\`\`"
+  COMMIT_MESSAGE=$((echo "$COMMIT_JSON" | python3 -c "import sys, json; print(json.load(sys.stdin, strict=False)['commit']['message'])" || echo '') | head -n 1)
+  SLACK_MESSAGE="*$HEROKU_APP_NAME* was deployed by $AUTHOR_NAME!\n>$COMMIT_MESSAGE"
 fi
 
 echo "-----> Notifying Slack that the deploy is complete"
